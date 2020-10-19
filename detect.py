@@ -7,6 +7,7 @@ from pathlib import Path
 
 import cv2
 import torch
+import torchvision
 import torch.backends.cudnn as cudnn
 from numpy import random
 
@@ -71,8 +72,33 @@ def detect(save_img=False):
 
         # Inference
         t1 = time_synchronized()
-        pred = model(img, augment=opt.augment)[0]
+        '''
+        for i in model(img, augment=opt.augment):
+            for j in i:
+                print('***************************************\n',
+                        j.shape,
+                      '***************************************\n')
+        '''
+        model_ou = model(img, augment=opt.augment)
+        pred = model_ou[0]
+        save_1 = model_ou[1][0]
+        save_2 = model_ou[1][1]
+        save_3 = model_ou[1][2]
+        #dix = torch.max(save_1[...,:80],dim=4)
+        #print(dix[0].shape)
+        #torchvision.utils.save_image(dix[0],'%s.jpg'%path)
+   
+        # dix = save_1[0:1,0:1,...,4] # dix = save_1[0:1,0:1,...,4+2]
+        # torchvision.utils.save_image(dix,'%s_anchor1.png'%path)
 
+        dix = save_1[0:1,0:1,...,4] # dix = save_1[0:1,1:2,...,4+2]
+        torchvision.utils.save_image(dix,'%s_anchor1.png'%path)
+
+        dix = save_2[0:1,0:1,...,4] # dix = save_1[0:1,2:3,...,4+2]      
+        torchvision.utils.save_image(dix,'%s_anchor2.png'%path)
+
+        dix = save_3[0:1,0:1,...,4]
+        torchvision.utils.save_image(dix,'%s_anchor3.png'%path)
         # Apply NMS
         pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
         t2 = time_synchronized()
@@ -149,7 +175,7 @@ def detect(save_img=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='inference/hello', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.4, help='object confidence threshold')
