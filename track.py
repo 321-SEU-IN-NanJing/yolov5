@@ -193,7 +193,7 @@ if __name__ == '__main__':
                 a = np.ma.array(selctive_idx, mask=False)
                 a.mask[line_y] = True
                 a = a.compressed()
-                # print("++++++++++++++1 ", old_tracklets)
+                print("++++++++++++++1 ", old_tracklets)
                 for det in np.array(detecs)[a]:
                     baseid += 1
                     det['id'] = baseid
